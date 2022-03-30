@@ -9,9 +9,39 @@
 
         public function postData($table, $data)
         {
-            
+            try {
+                $response = PostModel::postData($table, $data);
+                $return = $this->fncResponse($response, "postData");
+            } catch (PDOException $ex) {
+                $return = $this->fncResponse(null, "postData");
+            }
+            return $return;
+        }
+
+                /**
+         * @response controller responses
+         */
+        public function fncResponse($response, $method)
+        {
+            if(!empty($response))
+            {
+                $json = [
+                    "status" => 200,
+                    "total" => count($response),
+                    "result" => $response
+                ];
+            }else
+            {
+                $json = [
+                    "status" =>404,
+                    "result" => "Not Found",
+                    "error_in" => $method
+                ];
+            }
+            return $json;
         }
     }
+    
 
 
 ?>

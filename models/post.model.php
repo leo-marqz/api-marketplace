@@ -1,10 +1,14 @@
 <?php
 
+    require_once("models/database.php");
     class PostModel 
     {
-        public function postData($table, $data)
+        public static function postData($table, $data)
         {
-            return;
+            $query = "INSERT INTO {$table} ";
+            $stmt = Database::connect()->prepare("");
+            $stmt->execute();
+
         }
     }
 
