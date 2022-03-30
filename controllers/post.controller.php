@@ -2,9 +2,9 @@
 
     class PostController 
     {
-        /**===================================>
-         * ==Peticion post para crear datos ==>
-         * ===================================>
+        /**====================================>
+         **== Peticion post para crear datos ==>
+         **====================================>
          */
 
         public function postData($table, $data)
@@ -27,8 +27,7 @@
             {
                 $json = [
                     "status" => 200,
-                    "total" => count($response),
-                    "result" => $response
+                    "result" => "The process was successful"
                 ];
             }else
             {
