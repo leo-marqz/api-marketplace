@@ -1,0 +1,8 @@
+{
+    "files.autoSave": "afterDelay",
+    "editor.fontSize": 22,
+    "editor.fontFamily": "Inconsolata",
+    "editor.fontWeight":"700",
+    "editor.fontLigatures": true,
+    
+}
