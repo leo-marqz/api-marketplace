@@ -114,12 +114,37 @@
 
          if(count($routersArray) == 1 && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == "POST")
          {
+
+
+            //==========================================================================
+            //traemos el listado de columnas de la tabla a cambiar
+            //==========================================================================
+            $columns = array();
+            $table = explode("?", $routersArray[1]);
+            $database = RoutesController::database();
+            $response = PostController::getColumnsData($table[0], $database);
+            foreach($response as $key => $value)
+            {
+                array_push($columns, $value->item);
+            }
+            echo json_encode(["table"=>$table[0],"total"=> count($columns),"Columns"=>$columns]);
+            return;
+
+            //==========================================================================
+            //recibimos valores post
+            //==========================================================================
              if(isset($_POST))
              {
-                $table = explode("?", $routersArray[1]);
-                //solicitamos respuesta del controlador para agregar datos a cualquier tabla
-                $response = new PostController();
-                $response->postData($table, $_POST);
+
+
+
+                 //==========================================================================
+                 //solicitamos respuesta del controlador para agregar datos a cualquier tabla
+                 //==========================================================================
+                 
+                 $table = explode("?", $routersArray[1]);
+                 $response = new PostController();
+                 $response->postData($table, $_POST);
 
             }      
          }

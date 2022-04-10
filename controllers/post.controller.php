@@ -18,7 +18,17 @@
             return $return;
         }
 
-                /**
+        
+        
+        /**
+        * @response columns - table
+        */
+        public static function getColumnsData($table, $database)
+        {
+            return PostModel::getColumnsData($table, $database);
+        }
+
+         /**
          * @response controller responses
          */
         public function fncResponse($response, $method)

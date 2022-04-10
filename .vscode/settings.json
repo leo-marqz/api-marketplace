@@ -5,4 +5,24 @@
     "editor.fontWeight":"700",
     "editor.fontLigatures": true,
     
+    "editor.tokenColorCustomizations": {
+        "[Default Dark+]": {
+            "strings": "#b9bab9",
+            "comments": "#9d9f9d",
+            "functions": "#A1E228",
+            "keywords": "#0582d0",
+            "numbers": "#f88417",
+            "textMateRules": [
+                {
+                    "scope": "keyword.operator",
+                    "settings": {
+                        "foreground": "#6ef1d7"
+                    },
+                    
+                }
+            ],
+            "types": "#03b38a",
+            "variables": "#f57812"
+        }
+    }
 }
