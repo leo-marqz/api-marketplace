@@ -127,26 +127,62 @@
             {
                 array_push($columns, $value->item);
             }
-            echo json_encode(["table"=>$table[0],"total"=> count($columns),"Columns"=>$columns]);
-            return;
 
-            //==========================================================================
-            //recibimos valores post
-            //==========================================================================
-             if(isset($_POST))
-             {
+            //========================================================================
+            //quitamos el primer y el ultimo elemento del array $columns
+            //========================================================================
+            
+            array_shift($columns);
+            array_pop($columns);
+            
+            //========================================================================
+            //validamos si las variables $_POST coinciden con las del arreglo $columns
+            //========================================================================
+            
+            $count = 0;
+            
+            foreach ($columns as $key => $value)
+            {
+                if(array_keys($_POST)[$key] == $value)
+                {
+                    $count++;
+                }
+                else
+                {
+                    $json = [
+                        "status"=> 400,
+                        "result" => "Error: Fields in the form do not match the database"
+                    ];
+                    echo json_encode($json, http_response_code($json['status']));
+                    return;
+                }
+            }
+            
+            //========================================================================
+            //validamos que $_POST y $columns tengan la misma cantidad de variables
+            //========================================================================
+
+            if(count($columns) == $count)
+            {
+                //==========================================================================
+                //recibimos valores post
+                //==========================================================================
+                 if(isset($_POST))
+                 {
+    
+                     //==========================================================================
+                     //solicitamos respuesta del controlador para agregar datos a cualquier tabla
+                     //==========================================================================
+                     
+                     $table = explode("?", $routersArray[1]);
+                     $response = new PostController();
+                     $result = $response->postData($table[0], $_POST);
+                     echo json_encode($result, http_response_code($result['status']));
+                    return;
+                }      
+            }
 
 
-
-                 //==========================================================================
-                 //solicitamos respuesta del controlador para agregar datos a cualquier tabla
-                 //==========================================================================
-                 
-                 $table = explode("?", $routersArray[1]);
-                 $response = new PostController();
-                 $response->postData($table, $_POST);
-
-            }      
          }
             
             /** ----------------------------------------------------------

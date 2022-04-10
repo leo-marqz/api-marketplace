@@ -9,10 +9,31 @@
         //===============================================================
         public static function postData($table, $data)
         {
-            // $query = "INSERT INTO {$table} ";
-            // $stmt = Database::connect()->prepare("");
-            // $stmt->execute();
+            $colums = "(";
+            $params = "(";
+            foreach ($data as $key => $value) {
+                $colums .= $key . ",";
+                $params .= ":" .$key . ",";
+            }
+            $colums = substr($colums, 0, -1);
+            $params = substr($params, 0, -1);
+            
+            $colums .= ")";
+            $params .= ")";
 
+            $stmt = Database::connect()->prepare("INSERT INTO {$table} {$colums} VALUES {$params}");
+            foreach ($data as $key => $value) {
+                $stmt->bindParam(":".$key, $data[$key], PDO::PARAM_STR);
+            }
+
+            if($stmt->execute())
+            {
+                return "ok";
+            }else
+            {
+                echo "\nPDO::errorInfo():\n";
+                print_r(Database::connect()->errorInfo());
+            }
         }
 
         //===============================================================
