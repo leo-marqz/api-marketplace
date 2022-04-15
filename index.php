@@ -20,6 +20,10 @@
     require_once("controllers/post.controller.php");
     require_once("models/post.model.php");
 
+    //PUT
+    require_once("models/put.model.php");
+    require_once("controllers/put.controller.php");
+
     $router = new RoutesController();
     $router->index();
 

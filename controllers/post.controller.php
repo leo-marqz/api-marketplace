@@ -37,7 +37,7 @@
             {
                 $json = [
                     "status" => 200,
-                    "result" => "The process was successful"
+                    "result" => $response
                 ];
             }else
             {

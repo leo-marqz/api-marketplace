@@ -28,11 +28,10 @@
 
             if($stmt->execute())
             {
-                return "ok";
+                return "The process was successful";
             }else
             {
-                echo "\nPDO::errorInfo():\n";
-                print_r(Database::connect()->errorInfo());
+                var_dump( Database::connect()->errorInfo() );
             }
         }
 

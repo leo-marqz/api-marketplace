@@ -195,16 +195,110 @@
                  && $_SERVER['REQUEST_METHOD'] == "PUT" 
                 )
                 {
-                    $json = [
-                        "status_code" => 200,
-                        "result" => "success",
-                        "author" => "LeoMarqz",
-                        "uri-parameters" => $routersArray,
-                        "n-parameters" => count($routersArray),
-                        "method" => $_SERVER['REQUEST_METHOD'],
-                        "function" => "Update"
-                ];
+
+                    //==========================================================================
+                    //preguntamos si viene ID
+                    //==========================================================================
+
+                    if(isset($_GET['id']) && isset($_GET['nameId']))
+                    {
+                        
+                        
+
+                        $table = explode("?", $routersArray[1])[0];
+                        $linkTo = $_GET['nameId'];
+                        $equalTo = $_GET['id'];
+                        $orderBy = null;
+                        $orderMode = null;
+                        $startAt = null; 
+                        $endAt = null;
+                        $data = 0;
+
+
+                        //==========================================================================
+                        //validamos si existe el ID
+                        //==========================================================================
+                        
+                        $response = new PutController();
+                        $existsData = $response->getFilterData($table, $linkTo, $equalTo, $orderBy, $orderMode, $startAt, $endAt);
+                        
+                        if($existsData){
+                            
+                            //==========================================================================
+                            //Capturamos los datos del formulario
+                            //==========================================================================
+                            
+                            $_PUT = array(); //variable personal, esta no es parte de variables globales de php
+                            parse_str(file_get_contents('php://input'), $_PUT);
+
+                            //==========================================================================
+                            //traemos el listado de columnas de la tabla a cambiar
+                            //==========================================================================
+                            $columns = array();
+                            $table = explode("?", $routersArray[1])[0];
+                            $database = RoutesController::database();
+                            $columnsName = PostController::getColumnsData($table, $database);
+                            foreach($columnsName as $key => $value)
+                            {
+                                array_push($columns, $value->item);
+                            }
+
+                            //========================================================================
+                            //quitamos el primer y el ultimo elemento del array $columns
+                            //========================================================================
+                            
+                            array_shift($columns);
+                            array_pop($columns);
+                            array_pop($columns);
+
+                            // var_dump($columns);
+                            
+                            //========================================================================
+                            //validamos si las variables $_PUT coinciden con las del arreglo $columns
+                            //========================================================================
+                            
+                            $count = 0;
+                            foreach (array_keys($_PUT) as $key => $value) 
+                                    $count = array_search($value, $columns);
+                            
+
+
+                            if($count > 0)
+                            {
+                                //==========================================================================
+                                //solicitamos respuesta del controlador para editar cualquier tabla
+                                //==========================================================================
+
+                                $response->putData($table, $_PUT, $_GET['id'], $_GET['nameId']);
+                                
+                                return;
+                            }else
+                            {
+                                $json = [
+                                    "status"=> 400,
+                                    "result" => "Error: Fields in the form do not match the database"
+                                ];
+                                echo json_encode($json, http_response_code($json['status']));
+                                return;
+                            }
+
+    
+                        }else{
+                            $json = [
+                                "status" => 404,
+                                "result" => "Error: the id is not found in the database" ,
+                                "error_in" => "getFilterData [ PUT ]"
+                            ];
+                            echo json_encode($json, http_response_code($json['status']));
+                        }
+                        return;
+
+                    }
+
+               
                 }
+
+
             /** ----------------------------------------------------------
              * METHOD DELETE
              ** ----------------------------------------------------------*/
