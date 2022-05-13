@@ -269,8 +269,8 @@
                                 //solicitamos respuesta del controlador para editar cualquier tabla
                                 //==========================================================================
 
-                                $response->putData($table, $_PUT, $_GET['id'], $_GET['nameId']);
-                                
+                                $json = $response->putData($table, $_PUT, $_GET['id'], $_GET['nameId']);
+                                echo json_encode($json, http_response_code($json['status']));
                                 return;
                             }else
                             {
@@ -309,15 +309,43 @@
                  && $_SERVER['REQUEST_METHOD'] == "DELETE" 
                 )
                 {
-                    $json = [
-                        "status_code" => 200,
-                        "result" => "success",
-                        "author" => "LeoMarqz",
-                        "uri-parameters" => $routersArray,
-                        "n-parameters" => count($routersArray),
-                        "method" => $_SERVER['REQUEST_METHOD'],
-                        "function" => "Delete"
-                ];
+                    /**
+                     * Preguntamos si viene Id
+                     */
+                    if(isset($_GET['id']) && isset($_GET['nameId']))
+                    {
+                        /**
+                         * Validamos que exista el Id
+                         */
+                        $table = explode("?", $routersArray[1])[0];
+                        $linkTo = $_GET['nameId'];
+                        $equalTo = $_GET['id'];
+                        $orderBy = null;
+                        $orderMode = null;
+                        $startAt = null;
+                        $endAt = null;
+
+                        $exists = PutController::getFilterData($table, $linkTo, $equalTo, $orderBy, $orderMode, $startAt, $endAt);
+                        if($exists)
+                        {
+                            /**
+                             * Solicitamos respuesta del controlador
+                             */
+                             $response = new DeleteController();
+                             $json = $response->deleteData($table, $_GET['id'], $_GET['nameId']);
+                             echo json_encode($json, http_response_code($json['status']));
+                             return;
+                        }
+                        else
+                        {
+                            $json = [
+                                "status"=>404,
+                                "result"=>"this category does not exist"
+                            ];
+                            echo json_encode($json, http_response_code($json['status']));
+                            return;
+                        }
+                    }
                 }
         }
 

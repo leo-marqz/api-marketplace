@@ -23,7 +23,7 @@
          * @param string $linkTo
          * @param string $equalTo
          */
-        public function getFilterData($table, $linkTo, $equalTo, $orderBy, $orderMode, $startAt, $endAt)
+        public static function getFilterData($table, $linkTo, $equalTo, $orderBy, $orderMode, $startAt, $endAt)
         {
             try
             {
@@ -37,7 +37,9 @@
         }
 
         /**
-         * @response controller responses
+         * @param mixed $response
+         * @param string $method
+         * @return mixed json
          */
         public function fncResponse($response, $method)
         {

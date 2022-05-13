@@ -5,6 +5,7 @@
 
         public static function putData($table, $data, $id, $nameId)
         {
+            $response = null;
             $set = "";
             foreach ($data as $key => $value) 
                 $set .= $key . " = :" . $key . ",";
@@ -20,15 +21,14 @@
             $stmt->bindParam(":" . $nameId, $id, PDO::PARAM_INT);
             if($stmt->execute())
             {
-                $json = [
-                    "status" =>200,
-                    "result" => "The process was successful"
-                ];
-                echo json_encode($json, http_response_code($json['status']));
-            }else
-            {
-                echo Database::connect()->errorInfo();
+                $response = "The process was successful";
             }
+            // else
+            // {
+            //     // echo Database::connect()->errorInfo();
+            //     $response = null;
+            // }
+            return $response;
         }
     }
 

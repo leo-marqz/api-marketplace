@@ -3,6 +3,7 @@
     /*
     ** Config :: CORS :: Cross Origin Resource Sharing || Comparticion de recursos de distintos origenes.
     */
+    
     header('Access-Control-Allow-Origin: *');
     header('Access-Control-Allow-Header: Origin, X-Requested-With, Content-Type, Acept');
     header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
@@ -23,6 +24,10 @@
     //PUT
     require_once("models/put.model.php");
     require_once("controllers/put.controller.php");
+    
+    //DELETE
+    require_once("models/delete.model.php");
+    require_once("controllers/delete.controller.php");
 
     $router = new RoutesController();
     $router->index();

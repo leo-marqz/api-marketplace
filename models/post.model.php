@@ -31,7 +31,7 @@
                 return "The process was successful";
             }else
             {
-                var_dump( Database::connect()->errorInfo() );
+                return Database::connect()->errorInfo();
             }
         }
 
