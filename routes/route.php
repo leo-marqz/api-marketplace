@@ -8,6 +8,8 @@
     {
         echo json_encode(["welcome" => "bienvenido a tu api marketplace"]);
     }else{
+
+        #region Routes->Get
         /** ----------------------------------------------------------
          * METHOD GET
          ** ----------------------------------------------------------*/
@@ -107,7 +109,9 @@
                 
             
         }
+        #endregion
 
+        #region Routes->Post
         /** ----------------------------------------------------------
          * METHOD POST
          ** ----------------------------------------------------------*/
@@ -135,56 +139,90 @@
             array_shift($columns);
             array_pop($columns);
             
-            //========================================================================
-            //validamos si las variables $_POST coinciden con las del arreglo $columns
-            //========================================================================
+            // //========================================================================
+            // //validamos si las variables $_POST coinciden con las del arreglo $columns
+            // //========================================================================
             
-            $count = 0;
+            // $count = 0;
             
-            foreach ($columns as $key => $value)
-            {
-                if(array_keys($_POST)[$key] == $value)
-                {
-                    $count++;
-                }
-                else
-                {
-                    $json = [
-                        "status"=> 400,
-                        "result" => "Error: Fields in the form do not match the database"
-                    ];
-                    echo json_encode($json, http_response_code($json['status']));
-                    return;
-                }
-            }
+            // foreach ($columns as $key => $value)
+            // {
+            //     if(array_keys($_POST)[$key] == $value)
+            //     {
+            //         $count++;
+            //     }
+            //     else
+            //     {
+            //         $json = [
+            //             "status"=> 400,
+            //             "result" => "Error: Fields in the form do not match the database"
+            //         ];
+            //         echo json_encode($json, http_response_code($json['status']));
+            //         return;
+            //     }
+            // }
             
             //========================================================================
             //validamos que $_POST y $columns tengan la misma cantidad de variables
             //========================================================================
 
-            if(count($columns) == $count)
+            if(isset($_POST))
             {
-                //==========================================================================
-                //recibimos valores post
-                //==========================================================================
-                 if(isset($_POST))
-                 {
+                    //==========================================================================
+                    //recibimos valores post
+                    //==========================================================================
+                            
+                    //========================================================================
+                    //validamos si las variables $_PUT coinciden con las del arreglo $columns
+                    //========================================================================
+                    $count = 0;
+                    foreach (array_keys($_POST) as $key => $value) 
+                            $count = array_search($value, $columns);
+                    
+                    if($count > 0)
+                    {
+                        if(isset($_GET['register']) && $_GET['register'] == true)
+                        {
+                            $response = new PostController();
+                            $return = $response->postRegister($table[0], $_POST);
+                            echo json_encode($return, http_response_code($return['status']));
+                        }
+                        else
+                        {
+                            echo 'no register';
+                        }
+                        return;
+                    }
+                    else
+                    {
+                        $json = [
+                            'status'=>404,
+                            'results'=>"Error: Fields in the form do not match the database"
+                        ];
+                        echo json_encode($json, http_response_code($json['status']));
+                        return;
+                    }
+    }
+
+            // if(count($columns) == $count)
+            // {
     
-                     //==========================================================================
-                     //solicitamos respuesta del controlador para agregar datos a cualquier tabla
-                     //==========================================================================
+            //          //==========================================================================
+            //          //solicitamos respuesta del controlador para agregar datos a cualquier tabla
+            //          //==========================================================================
                      
-                     $table = explode("?", $routersArray[1]);
-                     $response = new PostController();
-                     $result = $response->postData($table[0], $_POST);
-                     echo json_encode($result, http_response_code($result['status']));
-                    return;
-                }      
-            }
+            //          $table = explode("?", $routersArray[1]);
+            //          $response = new PostController();
+            //          $result = $response->postData($table[0], $_POST);
+            //          echo json_encode($result, http_response_code($result['status']));
+            //         return;
+            // }
 
 
          }
+         #endregion
             
+        #region Routes->Put
             /** ----------------------------------------------------------
              * METHOD PUT
              ** ----------------------------------------------------------*/
@@ -251,7 +289,6 @@
                             array_pop($columns);
                             array_pop($columns);
 
-                            // var_dump($columns);
                             
                             //========================================================================
                             //validamos si las variables $_PUT coinciden con las del arreglo $columns
@@ -297,8 +334,9 @@
 
                
                 }
+                #endregion
 
-
+        #region Routes->Delete
             /** ----------------------------------------------------------
              * METHOD DELETE
              ** ----------------------------------------------------------*/
@@ -344,15 +382,11 @@
                             ];
                             echo json_encode($json, http_response_code($json['status']));
                             return;
-                        }
+                        }   
                     }
                 }
-        }
-
-
-    // echo json_encode($json);
-    // http_response_code($json["status_code"]);
-
-        
+            #endregion
+    
+    }
 
 ?>
