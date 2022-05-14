@@ -189,7 +189,10 @@
                         }
                         else
                         {
-                            echo 'no register';
+                            $response = new PostController();
+                            $return = $response->postData($table[0], $_POST);
+                            echo json_encode($return, http_response_code($return['status']));
+                            return;
                         }
                         return;
                     }
