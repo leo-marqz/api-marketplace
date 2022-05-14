@@ -187,6 +187,13 @@
                             $return = $response->postRegister($table[0], $_POST);
                             echo json_encode($return, http_response_code($return['status']));
                         }
+                        else if(isset($_GET['login']) && $_GET['login'] == true)
+                        {
+                            $response = new PostController();
+                            $return = $response->postLogin($table[0], $_POST);
+                            echo json_encode($return, http_response_code($return['status']));
+                            return;
+                        }
                         else
                         {
                             $response = new PostController();

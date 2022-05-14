@@ -2,6 +2,13 @@
 
     class PostController 
     {
+
+        /**
+         * Properties
+         */
+        private $salt = '$2a$07$azybxcags23425sdg23sdfhsd$';
+
+
         /**====================================>
          **== Peticion post para crear datos ==>
          **====================================>
@@ -28,9 +35,7 @@
             try {
                 if(isset($data['password_user']) && $data['password_user'] != null)
                 {
-                    $passwExample = 'LeoMarqz123 = $2a$07$azybxcags23425sdg23sdegzTzc1fJgyk2RLzTegOTuPwZA07ckhy';
-                    $salt = '$2a$07$azybxcags23425sdg23sdfhsd$';
-                    $crypt = crypt($data['password_user'], $salt);
+                    $crypt = crypt($data['password_user'], $this->salt);
                     $data['password_user'] = $crypt;
                     $response = PostModel::postData($table, $data);
                     $return = $this->fncResponse($response, "postRegister -> postData");
@@ -41,6 +46,32 @@
                 }
             } catch (Exception $e) {
                 $return = $this->fncResponse(null, "postRegister -> postData");
+            }
+            return $return;
+        }
+
+        public function postLogin($table, $data)
+        {
+            try {
+                $response = GetModel::getFilterData($table, 'email_user', $data['email_user'], null, null, null, null);
+                if($response == false)
+                { 
+                    $return = $this->fncResponse(null, "postLogin", "Wrong email");
+                }
+                else
+                {
+                    $crypt = crypt($data['password_user'], $this->salt); 
+                    if($response[0]->password_user == $crypt)
+                    {
+                        $return = $this->fncResponse($response, "postLogin");
+                    }
+                    else
+                    {
+                        $return = $this->fncResponse(null, "postLogin", "Wrong password");
+                    }
+                }
+            } catch (Exception $e) {
+                $return = $this->fncResponse(null, "postLogin -> getFilterData");
             }
             return $return;
         }
@@ -56,10 +87,11 @@
          /**
          * @response controller responses
          */
-        public function fncResponse($response, $method)
+        public function fncResponse($response, $method, $error = null)
         {
             if(!empty($response))
             {
+                if(isset($response[0]->password_user)) unset($response[0]->password_user);
                 $json = [
                     "status" => 200,
                     "result" => $response
@@ -71,6 +103,11 @@
                     "result" => "Not Found",
                     "error_in" => $method
                 ];
+                if(!is_null($error))
+                {
+                    $json['status'] = 400;
+                    $json['result'] = $error;
+                } 
             }
             return $json;
         }
