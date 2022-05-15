@@ -63,12 +63,14 @@
                 else
                 {
                     $crypt = crypt($data['password_user'], $this->salt); 
+                    // print_r([$crypt, $response[0]->password_user]);
                     if($response[0]->password_user == $crypt)
                     {
                         /**
                          * Creacion del JWT
                          */
                         $time = time();
+                        $key = "a1b2c3d4e5f6abcdefg";
                         $token = array(
                             "iat"=>$time, //inicio
                             "exp"=> $time + (60*60*24), //1 dia
@@ -77,14 +79,15 @@
                                 "email"=>$response[0]->email_user
                             ]
                         );
-                        $key = "abcleomarqzabcwebabc123";
-                        $jwt = JWT::encode($token, $key);
+                        $jwt = JWT::encode($token, $key, 'HS256');
                         $data = [
                             'token_user'=>$jwt
                         ];
                         $update = PutModel::putData($table, $data, $response[0]->id_user, 'id_user');
-                        print_r($update); return;
-                        $return = $this->fncResponse($response, "postLogin");
+                        if($update != null)
+                        {
+                            $return = $this->fncResponse($response, "postLogin");
+                        }
                     }
                     else
                     {
@@ -92,7 +95,7 @@
                     }
                 }
             } catch (Exception $e) {
-                $return = $this->fncResponse(null, "postLogin -> getFilterData");
+                $return = $this->fncResponse(null, "postLogin -> getFilterData" . $e);
             }
             return $return;
         }
