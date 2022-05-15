@@ -1,5 +1,7 @@
 <?php
 
+    use Firebase\JWT\JWT;
+
     class PostController 
     {
 
@@ -63,6 +65,25 @@
                     $crypt = crypt($data['password_user'], $this->salt); 
                     if($response[0]->password_user == $crypt)
                     {
+                        /**
+                         * Creacion del JWT
+                         */
+                        $time = time();
+                        $token = array(
+                            "iat"=>$time, //inicio
+                            "exp"=> $time + (60*60*24), //1 dia
+                            "data"=>[
+                                "id"=>$response[0]->id_user,
+                                "email"=>$response[0]->email_user
+                            ]
+                        );
+                        $key = "abcleomarqzabcwebabc123";
+                        $jwt = JWT::encode($token, $key);
+                        $data = [
+                            'token_user'=>$jwt
+                        ];
+                        $update = PutModel::putData($table, $data, $response[0]->id_user, 'id_user');
+                        print_r($update); return;
                         $return = $this->fncResponse($response, "postLogin");
                     }
                     else

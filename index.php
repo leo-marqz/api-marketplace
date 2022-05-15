@@ -29,6 +29,9 @@
     require_once("models/delete.model.php");
     require_once("controllers/delete.controller.php");
 
+    //VENDOR
+    require_once("vendor/autoload.php");
+
     $router = new RoutesController();
     $router->index();
 
