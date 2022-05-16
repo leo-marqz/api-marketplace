@@ -135,32 +135,8 @@
             //========================================================================
             //quitamos el primer y el ultimo elemento del array $columns
             //========================================================================
-            
             array_shift($columns);
             array_pop($columns);
-            
-            // //========================================================================
-            // //validamos si las variables $_POST coinciden con las del arreglo $columns
-            // //========================================================================
-            
-            // $count = 0;
-            
-            // foreach ($columns as $key => $value)
-            // {
-            //     if(array_keys($_POST)[$key] == $value)
-            //     {
-            //         $count++;
-            //     }
-            //     else
-            //     {
-            //         $json = [
-            //             "status"=> 400,
-            //             "result" => "Error: Fields in the form do not match the database"
-            //         ];
-            //         echo json_encode($json, http_response_code($json['status']));
-            //         return;
-            //     }
-            // }
             
             //========================================================================
             //validamos que $_POST y $columns tengan la misma cantidad de variables
@@ -191,14 +167,35 @@
                         {
                             $response = new PostController();
                             $return = $response->postLogin($table[0], $_POST);
+                            
                             echo json_encode($return, http_response_code($return['status']));
                             return;
+                        }else if(isset($_GET['token']))
+                        {
+                            $user = GetModel::getFilterData("users", "token_user", $_GET['token'], null, null, null, null);
+                            if(!Empty($user))
+                            {
+                                $response = new PostController();
+                                $return = $response->postData($table[0], $_POST);
+                                echo json_encode($return, http_response_code($return['status']));
+                                return;
+                            }else{
+                                $json = [
+                                    'status'=>400,
+                                    'results'=>"Error: Authorization required"
+                                ];
+                                echo json_encode($json, http_response_code($json['status']));
+                                return;
+                            }
+                            
                         }
                         else
                         {
-                            $response = new PostController();
-                            $return = $response->postData($table[0], $_POST);
-                            echo json_encode($return, http_response_code($return['status']));
+                            $json = [
+                                'status'=>400,
+                                'results'=>"Error: Authorization required"
+                            ];
+                            echo json_encode($json, http_response_code($json['status']));
                             return;
                         }
                         return;
@@ -316,9 +313,35 @@
                                 //solicitamos respuesta del controlador para editar cualquier tabla
                                 //==========================================================================
 
-                                $json = $response->putData($table, $_PUT, $_GET['id'], $_GET['nameId']);
-                                echo json_encode($json, http_response_code($json['status']));
-                                return;
+                                if(isset($_GET['token']))
+                                {
+                                    $user = GetModel::getFilterData("users", "token_user", $_GET['token'], null, null, null, null);
+                                    if(!Empty($user))
+                                    {
+                                        $json = $response->putData($table, $_PUT, $_GET['id'], $_GET['nameId']);
+                                        echo json_encode($json, http_response_code($json['status']));
+                                        return;
+                                    }else{
+                                        $json = [
+                                            'status'=>400,
+                                            'results'=>"Error: Authorization required"
+                                        ];
+                                        echo json_encode($json, http_response_code($json['status']));
+                                        return;
+                                    }
+                                    
+                                }
+                                else
+                                {
+                                    $json = [
+                                        'status'=>400,
+                                        'results'=>"Error: Authorization required"
+                                    ];
+                                    echo json_encode($json, http_response_code($json['status']));
+                                    return;
+                                }
+                                
+
                             }else
                             {
                                 $json = [
@@ -340,6 +363,15 @@
                         }
                         return;
 
+                    }
+                    else
+                    {
+                        $json = [
+                            'status'=>404,
+                            'result'=>'Error: enter the parameters id and nameId'
+                        ];
+                        echo json_encode($json, http_response_code($json['status']));
+                        return;
                     }
 
                
@@ -376,23 +408,59 @@
                         $exists = PutController::getFilterData($table, $linkTo, $equalTo, $orderBy, $orderMode, $startAt, $endAt);
                         if($exists)
                         {
-                            /**
-                             * Solicitamos respuesta del controlador
-                             */
-                             $response = new DeleteController();
-                             $json = $response->deleteData($table, $_GET['id'], $_GET['nameId']);
-                             echo json_encode($json, http_response_code($json['status']));
-                             return;
+                            
+                            if(isset($_GET['token']))
+                            {
+                                $user = GetModel::getFilterData("users", "token_user", $_GET['token'], null, null, null, null);
+                                if(!Empty($user))
+                                {
+                                    /**
+                                     * Solicitamos respuesta del controlador
+                                     */
+                                    // echo "table [ " . $table . " ]: " . $_GET['nameId'] . "  ->  " . $_GET['id'];
+                                    $response = new DeleteController();
+                                    $json = $response->deleteData($table, $_GET['id'], $_GET['nameId']);
+                                    echo json_encode($json, http_response_code($json['status']));
+                                    return;
+                                }else{
+                                    $json = [
+                                        'status'=>400,
+                                        'results'=>"Error: Authorization required"
+                                    ];
+                                    echo json_encode($json, http_response_code($json['status']));
+                                    return;
+                                }
+                                
+                            }
+                            else
+                            {
+                                $json = [
+                                    'status'=>400,
+                                    'results'=>"Error: Authorization required"
+                                ];
+                                echo json_encode($json, http_response_code($json['status']));
+                                return;
+                            }
+                             
                         }
                         else
                         {
                             $json = [
                                 "status"=>404,
-                                "result"=>"this category does not exist"
+                                "result"=>"this resource does not exist"
                             ];
                             echo json_encode($json, http_response_code($json['status']));
                             return;
                         }   
+                    }
+                    else
+                    {
+                        $json = [
+                            'status'=>404,
+                            'result'=>'Error: enter the parameters id and nameId'
+                        ];
+                        echo json_encode($json, http_response_code($json['status']));
+                        return;
                     }
                 }
             #endregion

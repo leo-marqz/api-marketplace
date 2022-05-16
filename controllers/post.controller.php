@@ -86,6 +86,7 @@
                         $update = PutModel::putData($table, $data, $response[0]->id_user, 'id_user');
                         if($update != null)
                         {
+                            $response[0]->token_user = $jwt;
                             $return = $this->fncResponse($response, "postLogin");
                         }
                     }

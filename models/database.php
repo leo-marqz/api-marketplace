@@ -11,7 +11,7 @@
             $link = null;
             try
             {
-                $link = new PDO("mysql:host=localhost;dbname=marketplace", "root", "");
+                $link = new PDO("mysql:host=localhost;dbname=app_marketplace", "root", "");
                 $link->exec("set names utf8");
 
             }catch(PDOException $ex)
