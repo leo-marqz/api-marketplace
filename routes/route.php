@@ -1,8 +1,15 @@
 <?php
 
+error_reporting(0);
+
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+
     $json = null;
     $routersArray = explode("/", $_SERVER['REQUEST_URI']);
     $routersArray = array_filter($routersArray);
+    define("KEY_TOKEN", 'a1b2c3d4e5f6abcdefg');
+    define("ALGORITHM_TOKEN", 'HS256');
 
     if(count($routersArray) == 0)
     {
@@ -172,21 +179,37 @@
                             return;
                         }else if(isset($_GET['token']))
                         {
-                            $user = GetModel::getFilterData("users", "token_user", $_GET['token'], null, null, null, null);
-                            if(!Empty($user))
+                            /**
+                             * validar si el token aun es valido
+                             */
+                            try
                             {
-                                $response = new PostController();
-                                $return = $response->postData($table[0], $_POST);
-                                echo json_encode($return, http_response_code($return['status']));
-                                return;
-                            }else{
-                                $json = [
-                                    'status'=>400,
-                                    'results'=>"Error: Authorization required"
-                                ];
-                                echo json_encode($json, http_response_code($json['status']));
-                                return;
-                            }
+                                 $key  = new Key(KEY_TOKEN, ALGORITHM_TOKEN);
+                                 $jwt = JWT::decode($_GET['token'], $key);
+                             }catch(Exception $e)
+                             {
+                                 $jwt = null;
+                             }
+                             if($jwt == null){
+                                 echo "expiro el token"; return;
+                             }else{
+                                 print_r($jwt->exp); return;
+                             }
+                            // $user = GetModel::getFilterData("users", "token_user", $_GET['token'], null, null, null, null);
+                            // if(!Empty($user))
+                            // {
+                            //     $response = new PostController();
+                            //     $return = $response->postData($table[0], $_POST);
+                            //     echo json_encode($return, http_response_code($return['status']));
+                            //     return;
+                            // }else{
+                            //     $json = [
+                            //         'status'=>400,
+                            //         'results'=>"Error: Authorization required"
+                            //     ];
+                            //     echo json_encode($json, http_response_code($json['status']));
+                            //     return;
+                            // }
                             
                         }
                         else

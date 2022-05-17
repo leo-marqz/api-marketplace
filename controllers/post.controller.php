@@ -73,7 +73,7 @@
                         $key = "a1b2c3d4e5f6abcdefg";
                         $token = array(
                             "iat"=>$time, //inicio
-                            "exp"=> $time + (60*60*24), //1 dia
+                            "exp"=> $time + ( 60 * 5 ), //5 min
                             "data"=>[
                                 "id"=>$response[0]->id_user,
                                 "email"=>$response[0]->email_user
