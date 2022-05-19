@@ -1,15 +1,14 @@
 <?php
 
-error_reporting(0);
-
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
+// error_reporting(0);
+// use Firebase\JWT\JWT;
+// use Firebase\JWT\Key;
 
     $json = null;
     $routersArray = explode("/", $_SERVER['REQUEST_URI']);
     $routersArray = array_filter($routersArray);
-    define("KEY_TOKEN", 'a1b2c3d4e5f6abcdefg');
-    define("ALGORITHM_TOKEN", 'HS256');
+    // define("KEY_TOKEN", 'a1b2c3d4e5f6abcdefg');
+    // define("ALGORITHM_TOKEN", 'HS256');
 
     if(count($routersArray) == 0)
     {
@@ -90,15 +89,25 @@ use Firebase\JWT\Key;
                     $startAt = isset($_GET['startAt']) ? $_GET['startAt'] : null;
                     $endAt = isset($_GET['endAt']) ? $_GET['endAt'] : null;
 
-                    //sin filtro
-                    $response = new GetController();
-                    $response->getSearchData(explode("?", $routersArray[1])[0], $_GET['linkTo'], $_GET['search'], $orderBy, $orderMode, $startAt, $endAt);
+                    if(explode('?', $routersArray[1][0]) == 'relations' && isset($_GET['rel']) && isset($_GET['type']))
+                    {
+                        //sin filtro
+                        $response = new GetController();
+                        $response->getSearchRelData($_GET['rel'], $_GET['type'], $_GET['linkTo'], $_GET['equalTo'], $orderBy, $orderMode, $startAt, $endAt);
+                        return;
+                    }else
+                    {
+                        //sin filtro
+                        $response = new GetController();
+                        $response->getSearchData(explode("?", $routersArray[1])[0], $_GET['linkTo'], $_GET['search'], $orderBy, $orderMode, $startAt, $endAt);
+                        return;
+                    } 
                 }
                 else{
                     //=========================>
                     //Peticiones GET sin filtro
                     //=========================>
-                    
+                
                     //con orden
                     $orderBy = isset($_GET['orderBy']) ? $_GET['orderBy'] : null;
                     $orderMode = isset($_GET['orderMode']) ? $_GET['orderMode'] : null;
@@ -111,6 +120,7 @@ use Firebase\JWT\Key;
 
                     $response = new GetController();
                     $response->getData($table[0], $orderBy, $orderMode, $startAt, $endAt);
+                    return;
                 }
                 
                 
@@ -145,18 +155,14 @@ use Firebase\JWT\Key;
             array_shift($columns);
             array_pop($columns);
             
-            //========================================================================
-            //validamos que $_POST y $columns tengan la misma cantidad de variables
-            //========================================================================
-
+            
+            //==========================================================================
+            //recibimos valores post
+            //==========================================================================
             if(isset($_POST))
             {
-                    //==========================================================================
-                    //recibimos valores post
-                    //==========================================================================
-                            
                     //========================================================================
-                    //validamos si las variables $_PUT coinciden con las del arreglo $columns
+                    //validamos si las variables $_POST coinciden con las del arreglo $columns
                     //========================================================================
                     $count = 0;
                     foreach (array_keys($_POST) as $key => $value) 
@@ -182,34 +188,34 @@ use Firebase\JWT\Key;
                             /**
                              * validar si el token aun es valido
                              */
-                            try
+                            $user = GetModel::getFilterData("users", "token_user", $_GET['token'], null, null, null, null);
+                            if(!Empty($user))
                             {
-                                 $key  = new Key(KEY_TOKEN, ALGORITHM_TOKEN);
-                                 $jwt = JWT::decode($_GET['token'], $key);
-                             }catch(Exception $e)
-                             {
-                                 $jwt = null;
-                             }
-                             if($jwt == null){
-                                 echo "expiro el token"; return;
-                             }else{
-                                 print_r($jwt->exp); return;
-                             }
-                            // $user = GetModel::getFilterData("users", "token_user", $_GET['token'], null, null, null, null);
-                            // if(!Empty($user))
-                            // {
-                            //     $response = new PostController();
-                            //     $return = $response->postData($table[0], $_POST);
-                            //     echo json_encode($return, http_response_code($return['status']));
-                            //     return;
-                            // }else{
-                            //     $json = [
-                            //         'status'=>400,
-                            //         'results'=>"Error: Authorization required"
-                            //     ];
-                            //     echo json_encode($json, http_response_code($json['status']));
-                            //     return;
-                            // }
+                                // $key  = new Key(KEY_TOKEN, ALGORITHM_TOKEN);
+                                // $jwt = JWT::decode($_GET['token'], $key);
+                                $time = time();
+                                if($users[0]->token_exp_user > $time || $user[0]->token_exp_user != null)
+                                {
+                                    $response = new PostController();
+                                    $return = $response->postData($table[0], $_POST);
+                                    echo json_encode($return, http_response_code($return['status']));
+                                    return;
+                                }else{
+                                    $json = [
+                                        'status'=>400,
+                                        'results'=>"Error: Authorization required [ token exp ]"
+                                    ];
+                                    echo json_encode($json, http_response_code($json['status']));
+                                    return;
+                                }
+                            }else{
+                                $json = [
+                                    'status'=>400,
+                                    'results'=>"Error: Authorization required [ token null ]"
+                                ];
+                                echo json_encode($json, http_response_code($json['status']));
+                                return;
+                            }
                             
                         }
                         else
@@ -233,21 +239,6 @@ use Firebase\JWT\Key;
                         return;
                     }
     }
-
-            // if(count($columns) == $count)
-            // {
-    
-            //          //==========================================================================
-            //          //solicitamos respuesta del controlador para agregar datos a cualquier tabla
-            //          //==========================================================================
-                     
-            //          $table = explode("?", $routersArray[1]);
-            //          $response = new PostController();
-            //          $result = $response->postData($table[0], $_POST);
-            //          echo json_encode($result, http_response_code($result['status']));
-            //         return;
-            // }
-
 
          }
          #endregion
@@ -318,36 +309,47 @@ use Firebase\JWT\Key;
                             array_shift($columns);
                             array_pop($columns);
                             array_pop($columns);
-
                             
                             //========================================================================
                             //validamos si las variables $_PUT coinciden con las del arreglo $columns
                             //========================================================================
-                            
                             $count = 0;
                             foreach (array_keys($_PUT) as $key => $value) 
                                     $count = array_search($value, $columns);
                             
-
-
                             if($count > 0)
                             {
                                 //==========================================================================
                                 //solicitamos respuesta del controlador para editar cualquier tabla
                                 //==========================================================================
-
                                 if(isset($_GET['token']))
                                 {
+                                    /**
+                                     * validar si el token aun es valido
+                                     */
                                     $user = GetModel::getFilterData("users", "token_user", $_GET['token'], null, null, null, null);
                                     if(!Empty($user))
                                     {
-                                        $json = $response->putData($table, $_PUT, $_GET['id'], $_GET['nameId']);
-                                        echo json_encode($json, http_response_code($json['status']));
-                                        return;
+                                        // $key  = new Key(KEY_TOKEN, ALGORITHM_TOKEN);
+                                        // $jwt = JWT::decode($_GET['token'], $key);
+                                        $time = time();
+                                        if($users[0]->token_exp_user > $time || $user[0]->token_exp_user != null)
+                                        {
+                                            $json = $response->putData($table, $_PUT, $_GET['id'], $_GET['nameId']);
+                                            echo json_encode($json, http_response_code($json['status']));
+                                            return;
+                                        }else{
+                                            $json = [
+                                                'status'=>400,
+                                                'results'=>"Error: Authorization required [ token exp ]"
+                                            ];
+                                            echo json_encode($json, http_response_code($json['status']));
+                                            return;
+                                        }
                                     }else{
                                         $json = [
                                             'status'=>400,
-                                            'results'=>"Error: Authorization required"
+                                            'results'=>"Error: Authorization required [ token null ]"
                                         ];
                                         echo json_encode($json, http_response_code($json['status']));
                                         return;
@@ -363,13 +365,11 @@ use Firebase\JWT\Key;
                                     echo json_encode($json, http_response_code($json['status']));
                                     return;
                                 }
-                                
-
                             }else
                             {
                                 $json = [
                                     "status"=> 400,
-                                    "result" => "Error: Fields in the form do not match the database"
+                                    "results" => "Error: Fields in the form do not match the database"
                                 ];
                                 echo json_encode($json, http_response_code($json['status']));
                                 return;
@@ -379,7 +379,7 @@ use Firebase\JWT\Key;
                         }else{
                             $json = [
                                 "status" => 404,
-                                "result" => "Error: the id is not found in the database" ,
+                                "results" => "Error: the id is not found in the database" ,
                                 "error_in" => "getFilterData [ PUT ]"
                             ];
                             echo json_encode($json, http_response_code($json['status']));
@@ -391,7 +391,7 @@ use Firebase\JWT\Key;
                     {
                         $json = [
                             'status'=>404,
-                            'result'=>'Error: enter the parameters id and nameId'
+                            'results'=>'Error: enter the parameters id and nameId'
                         ];
                         echo json_encode($json, http_response_code($json['status']));
                         return;
@@ -431,46 +431,56 @@ use Firebase\JWT\Key;
                         $exists = PutController::getFilterData($table, $linkTo, $equalTo, $orderBy, $orderMode, $startAt, $endAt);
                         if($exists)
                         {
-                            
                             if(isset($_GET['token']))
-                            {
-                                $user = GetModel::getFilterData("users", "token_user", $_GET['token'], null, null, null, null);
-                                if(!Empty($user))
                                 {
                                     /**
-                                     * Solicitamos respuesta del controlador
+                                     * validar si el token aun es valido
                                      */
-                                    // echo "table [ " . $table . " ]: " . $_GET['nameId'] . "  ->  " . $_GET['id'];
-                                    $response = new DeleteController();
-                                    $json = $response->deleteData($table, $_GET['id'], $_GET['nameId']);
+                                    $user = GetModel::getFilterData("users", "token_user", $_GET['token'], null, null, null, null);
+                                    if(!Empty($user))
+                                    {
+                                        // $key  = new Key(KEY_TOKEN, ALGORITHM_TOKEN);
+                                        // $jwt = JWT::decode($_GET['token'], $key);
+                                        $time = time();
+                                        if($users[0]->token_exp_user > $time || $user[0]->token_exp_user != null)
+                                        {
+                                            $response = new DeleteController();
+                                     $json = $response->deleteData($table, $_GET['id'], $_GET['nameId']);
                                     echo json_encode($json, http_response_code($json['status']));
-                                    return;
-                                }else{
+                                            return;
+                                        }else{
+                                            $json = [
+                                                'status'=>400,
+                                                'results'=>"Error: Authorization required [ token exp ]"
+                                            ];
+                                            echo json_encode($json, http_response_code($json['status']));
+                                            return;
+                                        }
+                                    }else{
+                                        $json = [
+                                            'status'=>400,
+                                            'results'=>"Error: Authorization required [ token null ]"
+                                        ];
+                                        echo json_encode($json, http_response_code($json['status']));
+                                        return;
+                                    }
+                                    
+                                }
+                                else
+                                {
                                     $json = [
                                         'status'=>400,
                                         'results'=>"Error: Authorization required"
                                     ];
                                     echo json_encode($json, http_response_code($json['status']));
                                     return;
-                                }
-                                
-                            }
-                            else
-                            {
-                                $json = [
-                                    'status'=>400,
-                                    'results'=>"Error: Authorization required"
-                                ];
-                                echo json_encode($json, http_response_code($json['status']));
-                                return;
-                            }
-                             
+                                }   
                         }
                         else
                         {
                             $json = [
                                 "status"=>404,
-                                "result"=>"this resource does not exist"
+                                "results"=>"this resource does not exist"
                             ];
                             echo json_encode($json, http_response_code($json['status']));
                             return;
@@ -480,7 +490,7 @@ use Firebase\JWT\Key;
                     {
                         $json = [
                             'status'=>404,
-                            'result'=>'Error: enter the parameters id and nameId'
+                            'results'=>'Error: enter the parameters id and nameId'
                         ];
                         echo json_encode($json, http_response_code($json['status']));
                         return;

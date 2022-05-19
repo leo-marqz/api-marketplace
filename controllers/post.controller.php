@@ -73,7 +73,7 @@
                         $key = "a1b2c3d4e5f6abcdefg";
                         $token = array(
                             "iat"=>$time, //inicio
-                            "exp"=> $time + ( 60 * 5 ), //5 min
+                            "exp"=> $time + ( 60 * 60 * 24 ), // 1 day
                             "data"=>[
                                 "id"=>$response[0]->id_user,
                                 "email"=>$response[0]->email_user
@@ -81,7 +81,8 @@
                         );
                         $jwt = JWT::encode($token, $key, 'HS256');
                         $data = [
-                            'token_user'=>$jwt
+                            'token_user'=>$jwt,
+                            'token_exp_user'=>$time + ( 60 * 60 * 24 ) // 1 day
                         ];
                         $update = PutModel::putData($table, $data, $response[0]->id_user, 'id_user');
                         if($update != null)
@@ -119,19 +120,19 @@
                 if(isset($response[0]->password_user)) unset($response[0]->password_user);
                 $json = [
                     "status" => 200,
-                    "result" => $response
+                    "results" => $response
                 ];
             }else
             {
                 $json = [
                     "status" =>404,
-                    "result" => "Not Found",
+                    "results" => "Not Found",
                     "error_in" => $method
                 ];
                 if(!is_null($error))
                 {
                     $json['status'] = 400;
-                    $json['result'] = $error;
+                    $json['results'] = $error;
                 } 
             }
             return $json;

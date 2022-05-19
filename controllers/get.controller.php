@@ -97,6 +97,26 @@
         }
 
         /**
+         * @GET search engine between related tables 
+         * @param string $table
+         * @param string $linkTo
+         * @param string $equalTo
+         */
+        public function getSearchRelData($rel, $type, $linkTo, $search, $orderBy, $orderMode, $startAt, $endAt)
+        {
+            try
+            {
+                $response = GetModel::getSearchRelData($rel, $type,$linkTo, $search, $orderBy, $orderMode, $startAt, $endAt);
+                $return = $this->fncResponse($response, "getSearchRelData");
+            }catch(PDOException $ex)
+            {
+                $return = $this->fncResponse(null, "getSearchRelData");
+            }
+            echo json_encode($return, http_response_code($return['status']));
+            return;
+        }
+
+        /**
          * @response controller responses
          */
         public function fncResponse($response, $method)
@@ -106,13 +126,13 @@
                 $json = [
                     "status" => 200,
                     "total" => count($response),
-                    "result" => $response
+                    "results" => $response
                 ];
             }else
             {
                 $json = [
                     "status" =>404,
-                    "result" => "Not Found",
+                    "results" => "Not Found",
                     "error_in" => $method
                 ];
             }

@@ -29,13 +29,13 @@
             {
                 $json = [
                     "status" => 200,
-                    "result" => $response
+                    "results" => $response
                 ];
             }else
             {
                 $json = [
                     "status" =>404,
-                    "result" => "Not Found",
+                    "results" => "Not Found",
                     "error_in" => $method
                 ];
             }
