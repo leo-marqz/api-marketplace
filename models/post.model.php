@@ -22,6 +22,7 @@
             $params .= ")";
 
             $stmt = Database::connect()->prepare("INSERT INTO {$table} {$colums} VALUES {$params}");
+            // echo $colums . " = " . $params;
             foreach ($data as $key => $value) {
                 $stmt->bindParam(":".$key, $data[$key], PDO::PARAM_STR);
             }

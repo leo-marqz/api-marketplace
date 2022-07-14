@@ -15,7 +15,7 @@
 
          public static function database()
          {
-             return "marketplace";
+             return "app_marketplace";
          }
     }
 

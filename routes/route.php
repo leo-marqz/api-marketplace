@@ -13,6 +13,7 @@
     if(count($routersArray) == 0)
     {
         echo json_encode(["welcome" => "bienvenido a tu api marketplace"]);
+        return;
     }else{
 
         #region Routes->Get
@@ -165,8 +166,9 @@
                     //validamos si las variables $_POST coinciden con las del arreglo $columns
                     //========================================================================
                     $count = 0;
-                    foreach (array_keys($_POST) as $key => $value) 
-                            $count = array_search($value, $columns);
+                    foreach (array_keys($_POST) as $key => $value)
+                        $count = array_search($value, $columns);
+                    
                     
                     if($count > 0)
                     {
@@ -442,11 +444,12 @@
                                         // $key  = new Key(KEY_TOKEN, ALGORITHM_TOKEN);
                                         // $jwt = JWT::decode($_GET['token'], $key);
                                         $time = time();
-                                        if($users[0]->token_exp_user > $time || $user[0]->token_exp_user != null)
+                                        if($user[0]->token_exp_user > $time || $user[0]->token_exp_user != null)
                                         {
                                             $response = new DeleteController();
-                                     $json = $response->deleteData($table, $_GET['id'], $_GET['nameId']);
-                                    echo json_encode($json, http_response_code($json['status']));
+                                            // echo $table . " " . $_GET['nameId'] . " " . $_GET['id'];
+                                            $json = $response->deleteData($table, $_GET['id'], $_GET['nameId']);
+                                            echo json_encode($json, http_response_code($json['status']));
                                             return;
                                         }else{
                                             $json = [

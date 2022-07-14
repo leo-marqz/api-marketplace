@@ -14,6 +14,7 @@
                 $return = $this->fncResponse($response, "deleteData");
             }catch(PDOException $ex)
             {
+                echo $ex->getMessage();
                 $return = $this->fncResponse(null, "deleteData");
             }
             return $return;
