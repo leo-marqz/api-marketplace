@@ -4,6 +4,8 @@
 // use Firebase\JWT\JWT;
 // use Firebase\JWT\Key;
 
+use function PHPSTORM_META\type;
+
     $json = null;
     $routersArray = explode("/", $_SERVER['REQUEST_URI']);
     $routersArray = array_filter($routersArray);
@@ -29,7 +31,10 @@
                 //=========================>
                 //peticiones GET con filtro
                 //=========================>
-                if(isset($_GET['linkTo']) && isset($_GET['equalTo']) && !isset($_GET['rel']) && isset($_GET['type']))
+                if(
+                    isset($_GET['linkTo']) && isset($_GET['equalTo']) && 
+                    !isset($_GET['rel']) && isset($_GET['type'])
+                    )
                 {
                     //con orden
                     $orderBy = isset($_GET['orderBy']) ? $_GET['orderBy'] : null;
@@ -96,13 +101,35 @@
                         $response = new GetController();
                         $response->getSearchRelData($_GET['rel'], $_GET['type'], $_GET['linkTo'], $_GET['equalTo'], $orderBy, $orderMode, $startAt, $endAt);
                         return;
-                    }else
+                    }
+                    else
                     {
                         //sin filtro
                         $response = new GetController();
                         $response->getSearchData(explode("?", $routersArray[1])[0], $_GET['linkTo'], $_GET['search'], $orderBy, $orderMode, $startAt, $endAt);
                         return;
                     } 
+                }
+                else if(isset($_GET['linkTo']) && isset($_GET['equalTo']))
+                {   
+                    $orderMode = $_GET['orderMode'] ? $_GET['orderMode'] : null;
+                    $orderBy = $_GET['orderBy'] ? $_GET['orderBy'] : null;
+                    $startAt = ($_GET['startAt'] == 0) ? $_GET['startAt'] : null;
+                    // echo gettype($startAt   ) . " = " . $_GET['startAt'];
+                    $endAt = $_GET['endAt'] ? $_GET['endAt'] : null;
+                    // echo $orderBy . " -> " . $orderMode . " -> " . $startAt . " -> " . $endAt;
+                    $table = explode("?",$routersArray[1])[0];
+                    $response = new GetController();
+                    $response->getFilterData(
+                        $table, 
+                        $_GET['linkTo'], 
+                        $_GET['equalTo'], 
+                        $orderBy, 
+                        $orderMode, 
+                        $startAt, 
+                        $endAt
+                    );
+                    return;
                 }
                 else{
                     //=========================>
