@@ -15,7 +15,7 @@
                
             }catch(PDOException $ex)
             {
-                $return = $this->fncResponse(null, "getData");
+                $return = $this->fncResponse(null, "getData", $ex->getMessage());
             }
             echo json_encode($return, http_response_code($return['status']));
             return;
@@ -35,7 +35,7 @@
                 $return = $this->fncResponse($response, "getFilterData");
             }catch(PDOException $ex)
             {
-                $return = $this->fncResponse(null, "getFilterData");
+                $return = $this->fncResponse(null, "getFilterData", $ex->getMessage());
             }
             echo json_encode($return, http_response_code($return['status']));
             return;
@@ -53,7 +53,7 @@
                 $return = $this->fncResponse($response, "getRelData");
             }catch(PDOException $ex)
             {
-                $return = $this->fncResponse(null, "getRelData");
+                $return = $this->fncResponse(null, "getRelData", $ex->getMessage());
             }
             echo json_encode($return, http_response_code($return['status']));
             return;
@@ -70,7 +70,7 @@
                 $return = $this->fncResponse($response, "getRelFilterData");
             }catch(PDOException $ex)
             {
-                $return = $this->fncResponse(null, "getRelFilterData");
+                $return = $this->fncResponse(null, "getRelFilterData", $ex->getMessage());
             }
             echo json_encode($return, http_response_code($return['status']));
             return;
@@ -90,7 +90,7 @@
                 $return = $this->fncResponse($response, "getFilterData");
             }catch(PDOException $ex)
             {
-                $return = $this->fncResponse(null, "getFilterData");
+                $return = $this->fncResponse(null, "getFilterData", $ex->getMessage());
             }
             echo json_encode($return, http_response_code($return['status']));
             return;
@@ -110,7 +110,7 @@
                 $return = $this->fncResponse($response, "getSearchRelData");
             }catch(PDOException $ex)
             {
-                $return = $this->fncResponse(null, "getSearchRelData");
+                $return = $this->fncResponse(null, "getSearchRelData", $ex->getMessage());
             }
             echo json_encode($return, http_response_code($return['status']));
             return;
@@ -119,7 +119,7 @@
         /**
          * @response controller responses
          */
-        public function fncResponse($response, $method)
+        public function fncResponse($response, $method, $errorDescription = null )
         {
             if(!empty($response))
             {
@@ -133,7 +133,8 @@
                 $json = [
                     "status" =>404,
                     "results" => "Not Found",
-                    "error_in" => $method
+                    "error_in" => $method,
+                    "error_description"=>$errorDescription
                 ];
             }
             return $json;

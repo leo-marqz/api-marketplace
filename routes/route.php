@@ -112,11 +112,10 @@ use function PHPSTORM_META\type;
                 }
                 else if(isset($_GET['linkTo']) && isset($_GET['equalTo']))
                 {   
-                    $orderMode = $_GET['orderMode'] ? $_GET['orderMode'] : null;
-                    $orderBy = $_GET['orderBy'] ? $_GET['orderBy'] : null;
-                    $startAt = ($_GET['startAt'] == 0) ? $_GET['startAt'] : null;
-                    // echo gettype($startAt   ) . " = " . $_GET['startAt'];
-                    $endAt = $_GET['endAt'] ? $_GET['endAt'] : null;
+                    $orderMode = isset($_GET['orderMode']) ? $_GET['orderMode'] : null;
+                    $orderBy = isset($_GET['orderBy']) ? $_GET['orderBy'] : null;
+                    $startAt = isset($_GET['startAt']) ? $_GET['startAt'] : null;
+                    $endAt = isset($_GET['endAt']) ? $_GET['endAt'] : null;
                     // echo $orderBy . " -> " . $orderMode . " -> " . $startAt . " -> " . $endAt;
                     $table = explode("?",$routersArray[1])[0];
                     $response = new GetController();

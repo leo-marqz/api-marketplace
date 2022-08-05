@@ -177,6 +177,8 @@
                 $on2a = $relArray[0] . ".id_" . $typeArray[2] . "_" . $typeArray[0];
                 $on2b = $relArray[2] . ".id_" . $typeArray[2];
 
+                // echo $on1a . " = " . $on1b . " = " . $on2a . " = " . $on2b;
+
                 if($orderBy != null && $orderMode != null && $startAt == null && $endAt == null)
                 {
                     $stmt = Database::connect()->prepare(
@@ -185,14 +187,17 @@
                 }
                 else if($orderBy != null && $orderMode != null && $startAt != null && $endAt != null)
                 {
+                    // echo "SELECT * FROM {$relArray[0]} INNER JOIN {$relArray[1]} ON {$on1a} = {$on1b} INNER JOIN {$relArray[2]} OM {$on2a} = {$on2b} WHERE {$linkTo} = :$linkTo ORDER BY {$orderBy} {$orderMode} LIMIT {$startAt}, {$endAt}";
                     $stmt = Database::connect()->prepare(
-                        "SELECT * FROM {$relArray[0]} INNER JOIN {$relArray[1]} ON {$on1a} = {$on1b} INNER JOIN {$relArray[2]} OM {$on2a} = {$on2b} WHERE {$linkTo} = :$linkTo ORDER BY {$orderBy} {$orderMode} LIMIT {$startAt}, {$endAt}"
+                        "SELECT * FROM {$relArray[0]} INNER JOIN {$relArray[1]} ON {$on1a} = {$on1b} INNER JOIN {$relArray[2]} ON {$on2a} = {$on2b} WHERE {$linkTo} = :$linkTo ORDER BY {$orderBy} {$orderMode} LIMIT {$startAt}, {$endAt}"
                     );
+
                 }
                 else
                 {
+                    // echo "SELECT * FROM {$relArray[0]} INNER JOIN {$relArray[1]} ON {$on1a} = {$on1b} INNER JOIN {$relArray[2]} ON {$on2a} = {$on2b} WHERE {$linkTo} = :$linkTo";
                     $stmt = Database::connect()->prepare(
-                        "SELECT * FROM {$relArray[0]} INNER JOIN {$relArray[1]} ON {$on1a} = {$on1b} INNER JOIN {$relArray[2]} OM {$on2a} = {$on2b} WHERE {$linkTo} = :$linkTo"
+                        "SELECT * FROM {$relArray[0]} INNER JOIN {$relArray[1]} ON {$on1a} = {$on1b} INNER JOIN {$relArray[2]} ON {$on2a} = {$on2b} WHERE {$linkTo} = :$linkTo"
                     );
                 }
                 $stmt->bindParam(":" . $linkTo, $equalTo, PDO::PARAM_STR);
@@ -212,6 +217,7 @@
                 $on3a = $relArray[0] . ".id_" . $typeArray[3] . "_" . $typeArray[0];
                 $on3b = $relArray[3] . ".id_" . $typeArray[3];
 
+
                 if($orderBy != null && $orderMode != null && $startAt == null && $endAt == null)
                 {
                     $stmt = Database::connect()->prepare(
@@ -226,8 +232,9 @@
                 }
                 else
                 {
+                    // echo "SELECT * FROM {$relArray[0]} INNER JOIN {$relArray[1]} ON {$on1a} = {$on1b} INNER JOIN {$relArray[2]} OM {$on2a} = {$on2b} INNER JOIN {$relArray[3]} ON {$on3a} = {$on3b} WHERE {$linkTo} = :$linkTo";
                     $stmt = Database::connect()->prepare(
-                        "SELECT * FROM {$relArray[0]} INNER JOIN {$relArray[1]} ON {$on1a} = {$on1b} INNER JOIN {$relArray[2]} OM {$on2a} = {$on2b} INNER JOIN {$relArray[3]} ON {$on3a} = {$on3b} WHERE {$linkTo} = :$linkTo"
+                        "SELECT * FROM {$relArray[0]} INNER JOIN {$relArray[1]} ON {$on1a} = {$on1b} INNER JOIN {$relArray[2]} ON {$on2a} = {$on2b} INNER JOIN {$relArray[3]} ON {$on3a} = {$on3b} WHERE {$linkTo} = :$linkTo"
                     );
                 }
                 $stmt->bindParam(":" . $linkTo, $equalTo, PDO::PARAM_STR);
