@@ -226,13 +226,14 @@
                 }
                 else if($orderBy != null && $orderMode != null && $startAt != null && $endAt != null)
                 {
+                    // echo "SELECT * FROM {$relArray[0]} INNER JOIN {$relArray[1]} ON {$on1a} = {$on1b} INNER JOIN {$relArray[2]} ON {$on2a} = {$on2b} INNER JOIN {$relArray[3]} ON {$on3a} = {$on3b} WHERE {$linkTo} = :$linkTo ORDER BY {$orderBy} {$orderMode} LIMIT {$startAt},{$endAt}";
                     $stmt = Database::connect()->prepare(
-                        "SELECT * FROM {$relArray[0]} INNER JOIN {$relArray[1]} ON {$on1a} = {$on1b} INNER JOIN {$relArray[2]} OM {$on2a} = {$on2b} INNER JOIN {$relArray[3]} ON {$on3a} = {$on3b} WHERE {$linkTo} = :$linkTo ORDER BY {$orderBy} {$orderMode} LIMIT {$startAt}, {$endAt}"
+                        "SELECT * FROM {$relArray[0]} INNER JOIN {$relArray[1]} ON {$on1a} = {$on1b} INNER JOIN {$relArray[2]} ON {$on2a} = {$on2b} INNER JOIN {$relArray[3]} ON {$on3a} = {$on3b} WHERE {$linkTo} = :$linkTo ORDER BY {$orderBy} {$orderMode} LIMIT {$startAt},{$endAt}"
                     );
                 }
                 else
                 {
-                    // echo "SELECT * FROM {$relArray[0]} INNER JOIN {$relArray[1]} ON {$on1a} = {$on1b} INNER JOIN {$relArray[2]} OM {$on2a} = {$on2b} INNER JOIN {$relArray[3]} ON {$on3a} = {$on3b} WHERE {$linkTo} = :$linkTo";
+                    // echo "SELECT * FROM {$relArray[0]} INNER JOIN {$relArray[1]} ON {$on1a} = {$on1b} INNER JOIN {$relArray[2]} ON {$on2a} = {$on2b} INNER JOIN {$relArray[3]} ON {$on3a} = {$on3b} WHERE {$linkTo} = :$linkTo";
                     $stmt = Database::connect()->prepare(
                         "SELECT * FROM {$relArray[0]} INNER JOIN {$relArray[1]} ON {$on1a} = {$on1b} INNER JOIN {$relArray[2]} ON {$on2a} = {$on2b} INNER JOIN {$relArray[3]} ON {$on3a} = {$on3b} WHERE {$linkTo} = :$linkTo"
                     );
